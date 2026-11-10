@@ -1,0 +1,104 @@
+# Build Horilla HR Mobile: APK (Android) + IPA unsigned (iOS)
+# Taruh file ini di fork kamu: .github/workflows/build-apps.yml
+# Jalankan manual dari tab Actions -> "Build Apps" -> Run workflow.
+name: Build Apps
+
+on:
+  workflow_dispatch:
+    inputs:
+      debug_camera:
+        description: "Tampilkan error kamera asli di layar app"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: 3.47.5   # sama dengan ci.yml bawaan repo
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: horilla_mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Patch debug kamera
+        if: ${{ inputs.debug_camera }}
+        run: |
+          set -e
+          for f in lib/features/facedetection/ui/face_presence_gate.dart lib/features/facedetection/ui/face_enrolment_screen.dart; do
+            perl -0pi -e 's/(\n  \@override\n  void initState\(\))/\n  String? _camErr;\n$1/' "$f"
+            perl -0pi -e 's/\} on CameraException \{/} on CameraException catch (e) {\n      _camErr = \x27CameraException \${e.code}: \${e.description}\x27;/' "$f"
+            perl -0pi -e 's/\} catch \(_\) \{(\n\s*)if \(mounted\) setState\(\(\) => _status = _Status\.unavailable\);/} catch (e) {$1_camErr = e.toString();$1if (mounted) setState(() => _status = _Status.unavailable);/' "$f"
+          done
+          perl -0pi -e 's/Text\(\n(\s*)message,/Text(\n$1\x27\$message\\n\\n[debug] \${_camErr ?? "-"}\x27,/' lib/features/facedetection/ui/face_presence_gate.dart
+          perl -0pi -e 's/child: Text\(message,/child: Text(\x27\$message\\n\\n[debug] \${_camErr ?? "-"}\x27,/' lib/features/facedetection/ui/face_enrolment_screen.dart
+          git diff --stat
+
+      - name: Sign release pakai debug key (biar APK bisa di-install)
+        run: |
+          perl -0pi -e 's/getByName\("release"\) \{/getByName("release") {\n            signingConfig = signingConfigs.getByName("debug")/' android/app/build.gradle.kts
+
+      - run: flutter pub get
+      - run: flutter build apk --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: horilla-android-apk
+          path: horilla_mobile/build/app/outputs/flutter-apk/app-release.apk
+
+  ios:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: horilla_mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Patch debug kamera
+        if: ${{ inputs.debug_camera }}
+        run: |
+          set -e
+          for f in lib/features/facedetection/ui/face_presence_gate.dart lib/features/facedetection/ui/face_enrolment_screen.dart; do
+            perl -0pi -e 's/(\n  \@override\n  void initState\(\))/\n  String? _camErr;\n$1/' "$f"
+            perl -0pi -e 's/\} on CameraException \{/} on CameraException catch (e) {\n      _camErr = \x27CameraException \${e.code}: \${e.description}\x27;/' "$f"
+            perl -0pi -e 's/\} catch \(_\) \{(\n\s*)if \(mounted\) setState\(\(\) => _status = _Status\.unavailable\);/} catch (e) {$1_camErr = e.toString();$1if (mounted) setState(() => _status = _Status.unavailable);/' "$f"
+          done
+          perl -0pi -e 's/Text\(\n(\s*)message,/Text(\n$1\x27\$message\\n\\n[debug] \${_camErr ?? "-"}\x27,/' lib/features/facedetection/ui/face_presence_gate.dart
+          perl -0pi -e 's/child: Text\(message,/child: Text(\x27\$message\\n\\n[debug] \${_camErr ?? "-"}\x27,/' lib/features/facedetection/ui/face_enrolment_screen.dart
+          git diff --stat
+
+      - run: flutter pub get
+      - run: flutter build ios --release --no-codesign
+
+      - name: Bungkus jadi .ipa (unsigned)
+        run: |
+          mkdir -p Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -qr horilla-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: horilla-ios-unsigned-ipa
+          path: horilla_mobile/horilla-unsigned.ipa
