@@ -166,7 +166,7 @@ class _BiometricGateState extends ConsumerState<BiometricGate>
       final ok = await ref
           .read(localAuthProvider)
           .authenticate(
-            localizedReason: 'Unlock Horilla HR',
+            localizedReason: 'Unlock HRFella',
             options: const AuthenticationOptions(stickyAuth: true),
           );
       if (ok && mounted) setState(() => _locked = false);

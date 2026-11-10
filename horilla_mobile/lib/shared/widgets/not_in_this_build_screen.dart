@@ -38,7 +38,7 @@ class NotInThisBuildScreen extends StatelessWidget {
                   const SizedBox(height: AppSpace.x8),
                   Text(
                     '$title is not part of this version of the app. '
-                    'Use the Horilla web app for now.',
+                    'Use the HRFella web app for now.',
                     style: AppText.body,
                   ),
                 ],

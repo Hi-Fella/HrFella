@@ -1,4 +1,4 @@
-/// Design tokens, transcribed from the Horilla Mobile design handoff (v2).
+/// Design tokens for HRFella Mobile.
 ///
 /// Plain `static const` rather than a ThemeExtension: there is one brand and
 /// no dark mode, so the only thing an extension would buy -- swapping token
@@ -10,18 +10,18 @@ library;
 
 import 'package:flutter/widgets.dart';
 
-/// Horilla brand palette.
+/// HRFella brand palette — Navy Steel theme.
 ///
-/// Contrast note from the handoff, worth keeping next to the values: `brand`
-/// (#E54F38) is about 3.8:1 on white, so it is for large or graphic elements
-/// only. Small text and button fills use [brandStrong].
+/// Contrast note: `brand` (#0EA5E9, sky-500) is ~3.5:1 on white, so it is
+/// for large or graphic elements only. Small text and button fills use
+/// [brandStrong] (#0369A1, sky-700, ~8:1 on white).
 abstract final class AppColors {
-  static const brand = Color(0xFFE54F38); // Cinnabar; logo, large accents
-  static const brandStrong = Color(0xFFC43D28); // fills, accent text (4.5:1+)
-  static const brandPressed = Color(0xFFA83320);
-  static const brandTint = Color(0xFFFDECE8);
-  static const brandTintBorder = Color(0xFFF6CFC7);
-  static const brandTintInk = Color(0xFF7A2415);
+  static const brand = Color(0xFF0EA5E9); // sky-500; logo, large accents
+  static const brandStrong = Color(0xFF0369A1); // sky-700; fills, accent text (8:1+)
+  static const brandPressed = Color(0xFF075985); // sky-800; pressed state
+  static const brandTint = Color(0xFFF0F9FF); // sky-50
+  static const brandTintBorder = Color(0xFFBAE6FD); // sky-200
+  static const brandTintInk = Color(0xFF0C4A6E); // sky-900; text on tint
 
   static const ink = Color(0xFF1C1C1C); // primary text; dark hero surfaces
   static const ink2 = Color(0xFF444442); // secondary body
@@ -65,7 +65,7 @@ abstract final class AppColors {
   static const successBg = Color(0xFFE4F2EA);
 
   /// The toast's Undo action -- a light brand tone readable on ink.
-  static const toastAction = Color(0xFFFF8A73);
+  static const toastAction = Color(0xFF7DD3FC); // sky-300
 
   /// Inset tiles and dividers on ink surfaces.
   static const onDarkTile = Color(0x12FFFFFF); // rgba(255,255,255,0.07)
@@ -220,10 +220,10 @@ abstract final class AppShadows {
     ),
   ];
 
-  /// `0 12px 24px -12px rgba(196,61,40,.7)` -- primary buttons only.
+  /// `0 12px 24px -12px rgba(3,105,161,.7)` -- primary buttons only.
   static const brandButton = [
     BoxShadow(
-      color: Color(0xB3C43D28),
+      color: Color(0xB30369A1),
       offset: Offset(0, 12),
       blurRadius: 24,
       spreadRadius: -12,

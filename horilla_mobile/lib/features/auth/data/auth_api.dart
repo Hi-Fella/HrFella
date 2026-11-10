@@ -62,7 +62,7 @@ class AuthApi {
     if (body['product'] == 'horilla' && contract is int) {
       if (contract < kMinimumApiContract) {
         throw ApiIncompatibleServer(
-          'This server speaks Horilla API contract $contract. The app needs '
+          'This server speaks API contract $contract. The app needs '
           'contract $kMinimumApiContract or newer.',
         );
       }
@@ -75,10 +75,9 @@ class AuthApi {
     final hasVersionedApi = await _hasVersionedApi(host);
     throw ApiIncompatibleServer(
       hasVersionedApi
-          ? 'This server runs an older Horilla 2. Update it to a release that '
-                'includes the mobile API.'
-          : 'This server runs Horilla 1, which the app does not support. '
-                'It needs migrating to Horilla 2.',
+          ? 'This server is outdated. Update it to a release that includes '
+                'the mobile API.'
+          : 'This server version is not supported by the app.',
     );
   }
 

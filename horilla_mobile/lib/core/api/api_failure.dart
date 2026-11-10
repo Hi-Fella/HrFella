@@ -104,7 +104,7 @@ final class ApiLockedOut extends ApiFailure {
 /// The host answered, but is not a Horilla server, or is too old to talk to.
 final class ApiIncompatibleServer extends ApiFailure {
   const ApiIncompatibleServer([
-    super.message = "This doesn't look like a Horilla server.",
+    super.message = "This doesn't look like a HRFella server.",
   ]);
 }
 

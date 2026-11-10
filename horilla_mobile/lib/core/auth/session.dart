@@ -89,7 +89,7 @@ class SessionController extends Notifier<Session?> {
     // so this leaves no half-session behind.
     if (!result.hasMobileApi) {
       throw const ApiIncompatibleServer(
-        'Signed in, but this Horilla server is missing the mobile API. '
+        'Signed in, but this HRFella server is missing the mobile API. '
         'It needs updating before the app can use it.',
       );
     }

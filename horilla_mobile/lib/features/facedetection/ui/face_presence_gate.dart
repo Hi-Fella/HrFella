@@ -235,7 +235,7 @@ class _FacePresenceGateState extends State<FacePresenceGate> {
         return _fallback(
           context,
           message:
-              'Camera access is off for Horilla HR, so this step can\'t run. '
+              'Camera access is off for HRFella, so this step can\'t run. '
               'Turn it on in Settings, or skip and punch without it.',
         );
       case _Status.unavailable:
