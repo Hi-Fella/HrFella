@@ -63,7 +63,7 @@ jobs:
           path: horilla_mobile/build/app/outputs/flutter-apk/app-release.apk
 
   ios:
-    runs-on: macos-latest
+    runs-on: macos-15-intel
     defaults:
       run:
         working-directory: horilla_mobile
