@@ -7,8 +7,7 @@ bool isSupportedCameraFrame({
   required int? formatRawValue,
   required int planeCount,
   required bool isAndroid,
-}) =>
-    false;
+}) => false;
 
 @visibleForTesting
 class PresenceCounter {

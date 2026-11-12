@@ -5,8 +5,7 @@ class LocalAuthentication {
   Future<bool> authenticate({
     required String localizedReason,
     AuthenticationOptions? options,
-  }) async =>
-      false;
+  }) async => false;
 }
 
 class AuthenticationOptions {

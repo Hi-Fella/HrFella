@@ -10,8 +10,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'local_auth_io.dart'
-    if (dart.library.html) 'local_auth_web.dart';
+import 'local_auth_io.dart' if (dart.library.html) 'local_auth_web.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../theme/tokens.dart';
