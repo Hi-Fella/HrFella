@@ -125,7 +125,7 @@ void main() {
 
     expect(find.text('Reject'), findsNothing);
     expect(
-      find.text('To reject this one, use the Horilla web app.'),
+      find.text('To reject this one, use the HRFella web app.'),
       findsOneWidget,
     );
   });

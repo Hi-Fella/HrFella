@@ -44,7 +44,7 @@ void main() {
     await tester.pumpWidget(wrap(const SignInScreen()));
 
     expect(find.text('SERVER'), findsNothing);
-    expect(find.textContaining('hr.demo.horilla.com'), findsOneWidget);
+    expect(find.textContaining('hr.hi-fella.com'), findsOneWidget);
 
     await revealServer(tester);
   });
