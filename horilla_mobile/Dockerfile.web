@@ -1,13 +1,6 @@
-# ── Stage 1: Flutter web build ──────────────────────────────────────────────
-FROM ghcr.io/cirruslabs/flutter:3.47.5 AS builder
-WORKDIR /app
-COPY pubspec.yaml pubspec.lock ./
-RUN flutter pub get --no-example
-COPY . .
-RUN flutter build web --release
-
-# ── Stage 2: Serve with nginx ────────────────────────────────────────────────
+# Flutter web is pre-built by CI (flutter build web --release).
+# This stage just packages the static output into an nginx image.
 FROM nginx:stable-alpine
-COPY --from=builder /app/build/web /usr/share/nginx/html
+COPY build/web /usr/share/nginx/html
 COPY nginx.web.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80

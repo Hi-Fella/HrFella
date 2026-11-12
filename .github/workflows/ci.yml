@@ -58,7 +58,7 @@ jobs:
     name: Build & push web image
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
-    needs: [check]
+    needs: [check, build-web]
     environment: production
     env:
       BYTEPLUS_CR_REGISTRY: ${{ vars.BYTEPLUS_CR_REGISTRY }}
@@ -70,6 +70,17 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Download web build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: hrfella-web
+          path: horilla_mobile/build
+
+      - name: Unzip web build
+        run: unzip horilla_mobile/build/hrfella-web.zip -d horilla_mobile/
+        # Extracts build/web/ into horilla_mobile/build/web/ — the path
+        # Dockerfile.web expects with COPY build/web /usr/share/nginx/html
 
       - name: Validate BytePlus CR configuration
         shell: bash
