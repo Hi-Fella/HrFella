@@ -29,3 +29,24 @@ jobs:
       - run: dart format --output=none --set-exit-if-changed lib test tool
       - run: flutter analyze
       - run: flutter test
+
+  build-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: horilla_mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.5
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build web --release
+      - name: Zip web build
+        run: zip -r build/hrfella-web.zip build/web/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hrfella-web
+          path: horilla_mobile/build/hrfella-web.zip
