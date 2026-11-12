@@ -50,3 +50,81 @@ jobs:
         with:
           name: hrfella-web
           path: horilla_mobile/build/hrfella-web.zip
+
+  # ── Build & push web Docker image to BytePlus CR ─────────────────────────
+  # Required GitHub vars  : BYTEPLUS_CR_REGISTRY, BYTEPLUS_CR_REPOSITORY_HRFELLA_WEB
+  # Required GitHub secrets: BYTEPLUS_CR_USERNAME, BYTEPLUS_CR_PASSWORD
+  push-web:
+    name: Build & push web image
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: [check]
+    environment: production
+    env:
+      BYTEPLUS_CR_REGISTRY: ${{ vars.BYTEPLUS_CR_REGISTRY }}
+      BYTEPLUS_CR_REPOSITORY: ${{ vars.BYTEPLUS_CR_REPOSITORY_HRFELLA_WEB }}
+      HIFELLA_CODENAME_ENVIRONMENT: production
+    concurrency:
+      group: hrfella-web-byteplus-cr
+      cancel-in-progress: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate BytePlus CR configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=()
+          [[ -n "${BYTEPLUS_CR_REGISTRY:-}" ]]   || missing+=("vars.BYTEPLUS_CR_REGISTRY")
+          [[ -n "${BYTEPLUS_CR_REPOSITORY:-}" ]]  || missing+=("vars.BYTEPLUS_CR_REPOSITORY_HRFELLA_WEB")
+          [[ -n "${{ secrets.BYTEPLUS_CR_USERNAME }}" ]] || missing+=("secrets.BYTEPLUS_CR_USERNAME")
+          [[ -n "${{ secrets.BYTEPLUS_CR_PASSWORD }}" ]] || missing+=("secrets.BYTEPLUS_CR_PASSWORD")
+          if ((${#missing[@]} > 0)); then
+            echo "Missing required GitHub configuration: ${missing[*]}" >&2
+            exit 1
+          fi
+
+      - name: Log in to BytePlus Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.BYTEPLUS_CR_REGISTRY }}
+          username: ${{ secrets.BYTEPLUS_CR_USERNAME }}
+          password: ${{ secrets.BYTEPLUS_CR_PASSWORD }}
+
+      - name: Build and push web image
+        id: image
+        shell: bash
+        working-directory: horilla_mobile
+        run: |
+          set -euo pipefail
+
+          image_tag="sha-${GITHUB_SHA::7}"
+          image_uri="${BYTEPLUS_CR_REGISTRY}/${BYTEPLUS_CR_REPOSITORY}:${image_tag}"
+          latest_uri="${BYTEPLUS_CR_REGISTRY}/${BYTEPLUS_CR_REPOSITORY}:${HIFELLA_CODENAME_ENVIRONMENT}"
+
+          docker build --platform linux/amd64 \
+            -f Dockerfile.web \
+            -t "$image_uri" \
+            -t "$latest_uri" \
+            .
+
+          docker push "$image_uri"
+          docker push "$latest_uri"
+
+          echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
+          echo "image_uri=$image_uri" >> "$GITHUB_OUTPUT"
+          echo "latest_uri=$latest_uri" >> "$GITHUB_OUTPUT"
+
+      - name: Summary
+        shell: bash
+        env:
+          IMAGE_URI: ${{ steps.image.outputs.image_uri }}
+          LATEST_URI: ${{ steps.image.outputs.latest_uri }}
+        run: |
+          {
+            echo "## BytePlus CR push — hrfella-web"
+            echo ""
+            echo "- Immutable tag: \`$IMAGE_URI\`"
+            echo "- \`production\` tag: \`$LATEST_URI\`"
+          } >> "$GITHUB_STEP_SUMMARY"
