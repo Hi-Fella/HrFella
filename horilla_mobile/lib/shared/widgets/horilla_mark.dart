@@ -21,8 +21,7 @@ class HorillaMark extends StatelessWidget {
       width: size,
       fit: BoxFit.contain,
       placeholder: (context, url) => SizedBox(width: size, height: size),
-      errorWidget: (context, url, error) =>
-          SizedBox(width: size, height: size),
+      errorWidget: (context, url, error) => SizedBox(width: size, height: size),
     );
   }
 }

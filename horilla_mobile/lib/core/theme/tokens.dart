@@ -17,7 +17,7 @@ import 'package:flutter/widgets.dart';
 /// [brandStrong] (#0369A1, sky-700, ~8:1 on white).
 abstract final class AppColors {
   static const brand = Color(0xFF0EA5E9); // sky-500; logo, large accents
-  static const brandStrong = Color(0xFF0369A1); // sky-700; fills, accent text (8:1+)
+  static const brandStrong = Color(0xFF0369A1); // sky-700; fills (8:1+)
   static const brandPressed = Color(0xFF075985); // sky-800; pressed state
   static const brandTint = Color(0xFFF0F9FF); // sky-50
   static const brandTintBorder = Color(0xFFBAE6FD); // sky-200
